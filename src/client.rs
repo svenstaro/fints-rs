@@ -26,6 +26,8 @@ pub struct PinTanClient {
 impl PinTanClient {
     pub fn get_accounts(&self) -> Vec<SepaAccount> {
         let mut dialog = Dialog::new(self.bank_code, &self.username, &self.pin);
+        dialog.sync();
+        dialog.init();
         vec![SepaAccount]
     }
 }

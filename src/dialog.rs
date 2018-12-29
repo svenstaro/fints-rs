@@ -1,4 +1,5 @@
 use crate::messages::*;
+use crate::se::to_string;
 
 #[derive(Debug)]
 pub struct Dialog {
@@ -43,8 +44,10 @@ impl Dialog {
     }
 
     pub fn sync(&mut self) {
-        let dialog_init_message = DialogSyncMessage::new(self.bank_code, &self.username, &self.pin, &self.customer_system_id, self.message_no);
+        let dialog_sync_message = DialogSyncMessage::new(self.bank_code, &self.username, &self.pin, &self.customer_system_id, self.message_no);
         // TODO Send request
+        let serialized = to_string(&dialog_sync_message).unwrap();
+        println!("{}", serialized);
     }
 
     pub fn init(&mut self) {}

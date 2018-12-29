@@ -8,7 +8,7 @@ pub fn main() {
         username: "test".to_string(),
         pin: "12345".to_string(),
     };
-    // let accounts = client.get_accounts();
+    let accounts = client.get_accounts();
     println!("{:#?}", client);
-    // println!("{:#?}", accounts);
+    println!("{:#?}", accounts);
 }

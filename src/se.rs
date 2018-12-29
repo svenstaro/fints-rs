@@ -5,46 +5,6 @@ use serde_derive::{Serialize, Deserialize};
 use std::fmt::{self, Display};
 use std::str;
 
-#[derive(Serialize, Deserialize, Debug)]
-#[allow(non_camel_case_types)]
-struct DEG_Stuff {
-    de_in_deg1: i32,
-    de_in_deg2: i32,
-    de_in_deg3: u32,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[allow(non_camel_case_types)]
-struct DEG_OtherStuff {
-    x: i32,
-    z: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct SegmentHead {
-    lol: u32,
-    rofl: i16,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct SpecificSegment {
-    head: SegmentHead,
-    some_deg: DEG_Stuff,
-    some_de: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct SpecificSegment2 {
-    head: SegmentHead,
-    some_more_de: u8,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct SpecificMessage {
-    seg1: SpecificSegment,
-    seg2: SpecificSegment2,
-}
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Error(String);
 type Result<T> = std::result::Result<T, Error>;
@@ -169,14 +129,15 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_none(self) -> Result<()> {
-        unimplemented!()
+        Ok(())
     }
 
-    fn serialize_some<T>(self, _value: &T) -> Result<()>
+    fn serialize_some<T>(self, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
-        unimplemented!()
+        value.serialize(&mut *self)?;
+        Ok(())
     }
 
     fn serialize_unit(self) -> Result<()> {
@@ -193,7 +154,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _variant_index: u32,
         _variant: &'static str,
     ) -> Result<()> {
-        unimplemented!()
+        Ok(())
     }
 
     fn serialize_newtype_struct<T>(self, _name: &'static str, _value: &T) -> Result<()>
@@ -254,7 +215,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         } else {
             self.inside_deg = false;
         }
-        println!("{} {}", name, self.inside_deg);
         Ok(self)
     }
 
