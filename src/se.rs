@@ -279,11 +279,14 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
             }
         }
 
-        if self.field_index_in_struct != 0 {
-            if self.inside_deg {
-                self.output += ":";
-            } else {
-                self.output += "+";
+        // Do not separate segments using delimiters.
+        if self.struct_stack.iter().any(|x| x.starts_with("Seg")) {
+            if self.field_index_in_struct != 0 {
+                if self.inside_deg {
+                    self.output += ":";
+                } else {
+                    self.output += "+";
+                }
             }
         }
         self.field_index_in_struct += 1;
@@ -291,12 +294,6 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
     }
 
     fn end(self) -> Result<()> {
-        // if self.current_segment_index == self.current_segment_elements_count as u32
-        //     && self.struct_stack.last().unwrap().starts_with("Seg")
-        // {
-        //     self.output += "|";
-        // }
-
         // In case this is a segment, we have to terminate it with `'`.
         if let Some(last) = self.struct_stack.last() {
             if last.starts_with("Seg") && !self.output.is_empty() {
