@@ -1,5 +1,5 @@
-use reqwest::get;
-
+use encoding_rs::ISO_8859_15;
+use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
 use crate::dialog::Dialog;
@@ -26,8 +26,23 @@ pub struct PinTanClient {
 impl PinTanClient {
     pub fn get_accounts(&self) -> Vec<SepaAccount> {
         let mut dialog = Dialog::new(self.bank_code, &self.username, &self.pin);
-        dialog.sync();
+        self.sync(&dialog).unwrap();
         dialog.init();
         vec![SepaAccount]
+    }
+
+    pub fn sync(&self, dialog: &Dialog) -> Result<String, Error> {
+        let client = reqwest::Client::new();
+        let msg = dialog.get_sync_message();
+        let mut response: String = client.post(&self.url)
+            .body(msg)
+            .send()?
+            .text()?;
+
+        let bytes = base64::decode(&response)?;
+        let (decoded, _, had_errors) = ISO_8859_15.decode(&bytes);
+
+        println!("response {}", decoded);
+        Result::Ok(response)
     }
 }
