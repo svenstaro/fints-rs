@@ -32,11 +32,11 @@ impl DialogSyncMessage {
             segment_head: DEG_SegmentHead {
                 identifier: "HNHBK".to_string(),
                 segment_no: 1,
-                version: 300,
+                version: 3,
                 reference_seg: None,
             },
             message_size: 0,
-            hbci_version: 0,
+            hbci_version: 300,
             dialog_id: "0".to_string(),
             message_no,
             reference_msg: None,
