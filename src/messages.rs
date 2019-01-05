@@ -7,18 +7,6 @@ use crate::data_types::*;
 use crate::segments::*;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DialogInitMessage {
-    message_head: Seg_HNHBK_MessageHead,
-    signature_head: Seg_HNSHK_SignatureHead,
-    identification: Seg_HKIDN_Identification,
-    processing_preparation: Seg_HKVVB_ProcessingPreparation,
-    two_step_tan_submission: Option<Seg_HKTAN_TwoStepTanSubmission>,
-    request_for_pubkey: Option<Seg_HKISA_RequestForPubkey>,
-    signature_end: Seg_HNSHA_SignatureEnd,
-    message_end: Seg_HNHBS_MessageEnd,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct DialogSyncMessage {
     message_head: Seg_HNHBK_MessageHead,
     signature_head: Seg_HNSHK_SignatureHead,
@@ -181,6 +169,18 @@ impl DialogSyncMessage {
             message_end: hnhbs_message_end,
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DialogInitMessage {
+    message_head: Seg_HNHBK_MessageHead,
+    signature_head: Seg_HNSHK_SignatureHead,
+    identification: Seg_HKIDN_Identification,
+    processing_preparation: Seg_HKVVB_ProcessingPreparation,
+    two_step_tan_submission: Option<Seg_HKTAN_TwoStepTanSubmission>,
+    request_for_pubkey: Option<Seg_HKISA_RequestForPubkey>,
+    signature_end: Seg_HNSHA_SignatureEnd,
+    message_end: Seg_HNHBS_MessageEnd,
 }
 
 #[cfg(test)]

@@ -48,7 +48,18 @@ impl Dialog {
         // TODO Send request
         let serialized = to_string(&dialog_sync_message).unwrap();
         println!("{}", serialized);
+        // this.systemId = response.systemId;
+        // this.dialogId = response.dialogId;
+        // this.hisalsVersion = response.segmentMaxVersion(HISALS);
+        // this.hikazsVersion = response.segmentMaxVersion(HIKAZS);
+        // this.tanMethods = response.supportedTanMethods;
+        // await this.end();
     }
 
-    pub fn init(&mut self) {}
+    pub fn init(&mut self) {
+        // let dialog_init_message = DialogInitMessage::new(self.bank_code, &self.username, &self.pin, &self.customer_system_id, self.message_no);
+        // // TODO Send request
+        // let serialized = to_string(&dialog_sync_message).unwrap();
+        // println!("{}", serialized);
+    }
 }
