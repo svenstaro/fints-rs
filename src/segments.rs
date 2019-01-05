@@ -2,12 +2,33 @@ use serde_derive::{Deserialize, Serialize};
 
 use crate::data_types::*;
 
+mod pad_to_12 {
+    use serde::{Deserializer, Serializer, Deserialize};
+
+    pub fn serialize<S>(number: &u64, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let s = format!("{:012}", number);
+        serializer.serialize_str(&s)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        s.parse::<u64>().map_err(serde::de::Error::custom)
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HNHBK_MessageHead {
     // Segmentkopf
     pub segment_head: DEG_SegmentHead,
 
     // Nachrichtengröße
+    #[serde(with = "pad_to_12")]
     pub message_size: u64,
 
     // HBCI-Version
