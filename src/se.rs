@@ -1,7 +1,6 @@
 //! Serialization.
 
 use serde::ser::{self, Serialize};
-use serde_derive::{Serialize, Deserialize};
 use std::fmt::{self, Display};
 use std::str;
 
@@ -34,6 +33,7 @@ pub struct Serializer {
     inside_deg: bool,
     field_index_in_struct: u32,
     last_struct_size: usize,
+    new_segment_starts_here: bool,
 }
 
 pub fn to_string<T>(value: &T) -> Result<String>
@@ -45,6 +45,7 @@ where
         inside_deg: false,
         field_index_in_struct: 0,
         last_struct_size: 0,
+        new_segment_starts_here: false,
     };
     value.serialize(&mut serializer)?;
     Ok(serializer.output)
@@ -210,11 +211,22 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     fn serialize_struct(self, name: &'static str, len: usize) -> Result<Self::SerializeStruct> {
         self.field_index_in_struct = 0;
         self.last_struct_size = len;
+
+        // Keep track of when a segment starts because segments have to be terminated with a `'`.
+        if name.starts_with("Seg") {
+            self.new_segment_starts_here = true;
+        } else {
+            self.new_segment_starts_here = false;
+        }
+
+        // Keep track of when a DEG starts since DEs inside of a DEG are delimited using
+        // `:`. Outside of oa DEG, DEs are delimited using `+`.
         if name.starts_with("DEG") {
             self.inside_deg = true;
         } else {
             self.inside_deg = false;
         }
+
         Ok(self)
     }
 
@@ -237,6 +249,10 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
     where
         T: ?Sized + Serialize,
     {
+        if self.new_segment_starts_here && !self.output.is_empty() {
+            self.output += "'\r\n";
+        }
+
         if self.field_index_in_struct != 0 {
             if self.inside_deg {
                 self.output += ":";
@@ -245,9 +261,9 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
             }
         }
         self.field_index_in_struct += 1;
-        value.serialize(&mut **self)?;
-        Ok(())
+        value.serialize(&mut **self)
     }
+
     fn end(self) -> Result<()> {
         // If we read the last field in this struct, we should reset the data we set for this
         // struct.
