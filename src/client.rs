@@ -34,15 +34,14 @@ impl PinTanClient {
     pub fn sync(&self, dialog: &Dialog) -> Result<String, Error> {
         let client = reqwest::Client::new();
         let msg = dialog.get_sync_message();
-        let mut response: String = client.post(&self.url)
+        let mut response = client.post(&self.url)
             .body(msg)
-            .send()?
-            .text()?;
+            .send()?;
 
-        let bytes = base64::decode(&response)?;
+        let bytes = base64::decode(&response.text()?)?;
         let (decoded, _, had_errors) = ISO_8859_15.decode(&bytes);
 
-        println!("response {}", decoded);
-        Result::Ok(response)
+        println!("response {} {}", response.status(), decoded);
+        Result::Ok(response.text()?)
     }
 }
