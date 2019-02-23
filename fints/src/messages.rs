@@ -1,3 +1,4 @@
+use crate::se::to_string;
 use chrono::prelude::*;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
@@ -5,8 +6,13 @@ use serde_derive::{Deserialize, Serialize};
 
 use crate::data_types::*;
 use crate::segments::*;
+use fints_derive::Message;
 
-#[derive(Debug, Serialize, Deserialize)]
+pub trait Message {
+    fn prepare_message_for_sending(&self) -> String;
+}
+
+#[derive(Debug, Serialize, Deserialize, Message)]
 pub struct DialogSyncMessage {
     message_head: Seg_HNHBK_MessageHead,
     signature_head: Seg_HNSHK_SignatureHead,
@@ -171,7 +177,7 @@ impl DialogSyncMessage {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Message)]
 pub struct DialogInitMessage {
     message_head: Seg_HNHBK_MessageHead,
     signature_head: Seg_HNSHK_SignatureHead,

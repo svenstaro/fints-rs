@@ -1,5 +1,4 @@
 use crate::messages::*;
-use crate::se::to_string;
 use base64;
 
 #[derive(Debug)]
@@ -46,10 +45,9 @@ impl Dialog {
 
     pub fn get_sync_message(&self) -> String {
         let dialog_sync_message = DialogSyncMessage::new(self.bank_code, &self.username, &self.pin, &self.customer_system_id, self.message_no);
+        dialog_sync_message.prepare_message_for_sending()
+
         // TODO Send request
-        let serialized = to_string(&dialog_sync_message).unwrap();
-        println!("{}", serialized);
-        base64::encode(&serialized)
         // this.systemId = response.systemId;
         // this.dialogId = response.dialogId;
         // this.hisalsVersion = response.segmentMaxVersion(HISALS);
