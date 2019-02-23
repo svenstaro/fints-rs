@@ -22,6 +22,7 @@ mod pad_to_12 {
     }
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HNHBK_MessageHead {
     // Segmentkopf
@@ -45,6 +46,7 @@ pub struct Seg_HNHBK_MessageHead {
 }
 
 /// B.5.1 Signaturkopf
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HNSHK_SignatureHead {
     // Segmentkopf
@@ -87,6 +89,7 @@ pub struct Seg_HNSHK_SignatureHead {
     pub certificate: Option<DEG_Certificate>,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HNHBS_MessageEnd {
     // Segmentkopf
@@ -97,6 +100,7 @@ pub struct Seg_HNHBS_MessageEnd {
 }
 
 // C.3.1.2 Segment: Identifikation
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HKIDN_Identification {
     // Segmentkopf
@@ -116,6 +120,7 @@ pub struct Seg_HKIDN_Identification {
 }
 
 // C.3.1.3 Segment: Verarbeitungsvorbereitung
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HKVVB_ProcessingPreparation {
     // Segmentkopf
@@ -137,6 +142,7 @@ pub struct Seg_HKVVB_ProcessingPreparation {
     pub product_version: String,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HKTAN_TwoStepTanSubmission {
     // Segmentkopf
@@ -159,6 +165,7 @@ pub struct Seg_HKTAN_TwoStepTanSubmission {
 }
 
 // C.3.1.4 Segment: Anforderung eines öffentlichen Schlüssels
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HKISA_RequestForPubkey {
     // Segmentkopf
@@ -181,6 +188,7 @@ pub struct Seg_HKISA_RequestForPubkey {
 }
 
 // C.8.1.2 Segment: Synchronisierung
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HKSYN_Synchronization {
     // Segmentkopf
@@ -191,6 +199,7 @@ pub struct Seg_HKSYN_Synchronization {
 }
 
 // B.5.2 Segment: Signaturabschluss
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Seg_HNSHA_SignatureEnd {
     // Segmentkopf

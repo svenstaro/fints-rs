@@ -2,12 +2,14 @@ use chrono::{NaiveDate, NaiveTime};
 use serde_derive::{Deserialize, Serialize};
 use std::fmt;
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_InstituteIdentifier {
     pub country_code: String,
     pub bank_code: u32,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_SegmentHead {
     pub identifier: String,
@@ -37,6 +39,7 @@ impl fmt::Display for SecurityMethodCode {
     }
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_SecurityProfile {
     pub security_method_code: SecurityMethodCode,
@@ -70,6 +73,7 @@ pub enum SecurityPartyIdentifier {
     MR = 2,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_SecurityIdentificationDetails {
     pub security_party_identifier: SecurityPartyIdentifier,
@@ -86,6 +90,7 @@ pub enum DateIdentifier {
     CRT = 6,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_SecurityDate {
     // Datum- und Zeitbezeichner, kodiert
@@ -146,6 +151,7 @@ pub enum HashAlgorithmParameterIdentifier {
     IVC = 1,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_HashAlgorithm {
     // Verwendung des Hashalgorithmus, kodiert
@@ -176,6 +182,7 @@ pub enum SignatureAlgorithm {
     RSA = 10,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub enum OperationMode {
     // Cipher Block Chaining (CBC) Nur für Verschlüsselung erlaubt (vgl. [HBCI], Kapitel VI.2.)
@@ -198,6 +205,7 @@ pub enum OperationMode {
     MutuallyAgreed = 999,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_SignatureAlgorithm {
     // Verwendung des Signaturalgorithmus, kodiert
@@ -222,6 +230,7 @@ pub enum KeyType {
     V,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_KeyName {
     // Kreditinstitutskennung
@@ -240,6 +249,7 @@ pub struct DEG_KeyName {
     pub key_version: u16,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CertificateType {
     // ZKA
@@ -252,6 +262,7 @@ pub enum CertificateType {
     X509v3 = 3,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_Certificate {
     // Zertifikatstyp
@@ -272,6 +283,7 @@ pub enum CustomerSystemStatus {
     Required = 1,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub enum DialogLang {
     Standard = 0,
@@ -292,6 +304,7 @@ pub enum TanProcess {
     Available = 3,
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_AccountInternationalIssuer {
     pub iban: String,
@@ -326,6 +339,8 @@ pub enum FunctionTypeIdentifier {
     RevocationConfirmation = 231,
 }
 
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DEG_UserDefinedSignature {
     pub PIN: String,
