@@ -66,7 +66,7 @@ impl DialogSyncMessage {
             security_date: DEG_SecurityDate {
                 date_identifier: DateIdentifier::STS,
                 date: Local::today().naive_local(),
-                time: Some(Local::now().naive_local().time()),
+                time: Local::now().naive_local().time(),
             },
             hash_algorithm: DEG_HashAlgorithm {
                 use_of_hash_algorithm: UseOfHashAlgorithm::OHA,

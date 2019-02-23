@@ -1,5 +1,6 @@
 use chrono::{NaiveDate, NaiveTime};
 use serde_derive::{Deserialize, Serialize};
+use serde_repr::{Serialize_repr, Deserialize_repr};
 use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -43,7 +44,8 @@ pub struct DEG_SecurityProfile {
     pub version: u8,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum SecurityFunction {
     NRO = 1,
     AUT = 2,
@@ -51,20 +53,23 @@ pub enum SecurityFunction {
     SingleStepAuth = 999,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum SecurityArea {
     SHM = 1,
     SHT = 2,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum SecurityRole {
     ISS = 1,
     CON = 3,
     WIT = 4,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum SecurityPartyIdentifier {
     MS = 1,
     MR = 2,
@@ -77,7 +82,8 @@ pub struct DEG_SecurityIdentificationDetails {
     pub party_identifier: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum DateIdentifier {
     // Sicherheitszeitstempel
     STS = 1,
@@ -96,13 +102,15 @@ pub struct DEG_SecurityDate {
     pub date: NaiveDate,
 
     // Uhrzeit
-    pub time: Option<NaiveTime>,
+    #[serde(with = "fints_time_format")]
+    pub time: NaiveTime,
 }
 
 mod fints_date_format {
     use chrono::NaiveDate;
     use serde::{self, Deserialize, Deserializer, Serializer};
 
+    /// ISO 8601
     const FORMAT: &'static str = "%Y%m%d";
 
     pub fn serialize<S>(date: &NaiveDate, serializer: S) -> Result<S::Ok, S::Error>
@@ -122,13 +130,39 @@ mod fints_date_format {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+mod fints_time_format {
+    use chrono::NaiveTime;
+    use serde::{self, Deserialize, Deserializer, Serializer};
+
+    /// ISO 8601
+    const FORMAT: &'static str = "%H%M%S";
+
+    pub fn serialize<S>(time: &NaiveTime, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let s = format!("{}", time.format(FORMAT));
+        serializer.serialize_str(&s)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveTime, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        NaiveTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
+    }
+}
+
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum UseOfHashAlgorithm {
     // Owner Hashing
     OHA = 1,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum HashAlgorithm {
     SHA1 = 1,
     SHA256 = 3,
@@ -140,7 +174,8 @@ pub enum HashAlgorithm {
     MutuallyAgreed = 999,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum HashAlgorithmParameterIdentifier {
     // Initialization value, clear text
     IVC = 1,
@@ -161,13 +196,15 @@ pub struct DEG_HashAlgorithm {
     pub param_value: Option<Vec<u8>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum UseOfSignatureAlgorithm {
     // Owner Signing
     OSG = 6,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum SignatureAlgorithm {
     // Nicht zugelassen
     NA = 1,
@@ -176,7 +213,8 @@ pub enum SignatureAlgorithm {
     RSA = 10,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum OperationMode {
     // Cipher Block Chaining (CBC) Nur für Verschlüsselung erlaubt (vgl. [HBCI], Kapitel VI.2.)
     CBC = 2,
@@ -240,7 +278,8 @@ pub struct DEG_KeyName {
     pub key_version: u16,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum CertificateType {
     // ZKA
     ZKA = 1,
@@ -261,7 +300,8 @@ pub struct DEG_Certificate {
     pub value: Vec<u8>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum CustomerSystemStatus {
     // Kundensystem-ID wird nicht benötigt (HBCI DDV-Verfahren und
     // chipkartenbasierte Verfahren ab Sicherheitsprofil-Version 3)
@@ -272,7 +312,8 @@ pub enum CustomerSystemStatus {
     Required = 1,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum DialogLang {
     Standard = 0,
     de = 1,
@@ -280,7 +321,8 @@ pub enum DialogLang {
     fr = 3,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum TanProcess {
     // Alle
     All = 0,
@@ -297,7 +339,8 @@ pub struct DEG_AccountInternationalIssuer {
     pub iban: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum MessageRelationship {
     // Key-Management-Nachricht ist Antwort
     IsAnswer = 1,
@@ -306,7 +349,8 @@ pub enum MessageRelationship {
     ExpectAnswer = 2,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum FunctionTypeIdentifier {
     // ‘Certificate Replacement’ (Ersatz des Zertifikats) im Zusammenhang mit der Schlüsseländerung
     CertificateReplacement = 112,
@@ -332,7 +376,8 @@ pub struct DEG_UserDefinedSignature {
     pub TAN: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u16)]
 pub enum SynchronizationMode {
     ReportNewCustomerSystemId = 0,
     ReportLastProcessedMessageNo = 1,
