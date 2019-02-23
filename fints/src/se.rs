@@ -1,8 +1,9 @@
 //! Serialization.
 
 use serde::ser::{self, Serialize};
-use std::fmt::{self, Display};
+use std::fmt::{self, Display, Debug};
 use std::str;
+use log::{info, debug};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Error(String);
@@ -57,7 +58,7 @@ pub struct Serializer {
 
 pub fn to_string<T>(value: &T) -> Result<String>
 where
-    T: Serialize,
+    T: Serialize + Debug,
 {
     let mut serializer = Serializer {
         output: String::new(),
@@ -69,6 +70,12 @@ where
         current_segment_index: 0,
     };
     value.serialize(&mut serializer)?;
+
+    // It's not stupid if it works!
+    let debug = format!("{:#?}", value);
+    info!("Serializing: {}", debug.split_whitespace().next().unwrap_or("Unknown"));
+    debug!("{:#?}", value);
+
     Ok(serializer.output)
 }
 
