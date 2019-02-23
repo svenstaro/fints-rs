@@ -174,8 +174,9 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         self,
         _name: &'static str,
         _variant_index: u32,
-        _variant: &'static str,
+        variant: &'static str,
     ) -> Result<()> {
+        variant.serialize(&mut *self)?;
         Ok(())
     }
 
