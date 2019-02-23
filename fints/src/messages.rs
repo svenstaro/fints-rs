@@ -131,7 +131,7 @@ impl DialogSyncMessage {
         let hksyn_synchronization = Seg_HKSYN_Synchronization {
             segment_head: DEG_SegmentHead {
                 identifier: "HKSYN".to_string(),
-                segment_no: 4,
+                segment_no: 5,
                 version: 3,
                 reference_seg: None,
             },
@@ -141,7 +141,7 @@ impl DialogSyncMessage {
         let hnsha_signature_end = Seg_HNSHA_SignatureEnd {
             segment_head: DEG_SegmentHead {
                 identifier: "HNSHA".to_string(),
-                segment_no: 5,
+                segment_no: 6,
                 version: 2,
                 reference_seg: None,
             },
@@ -156,7 +156,7 @@ impl DialogSyncMessage {
         let hnhbs_message_end = Seg_HNHBS_MessageEnd {
             segment_head: DEG_SegmentHead {
                 identifier: "HNHBS".to_string(),
-                segment_no: 6,
+                segment_no: 7,
                 version: 1,
                 reference_seg: None,
             },
