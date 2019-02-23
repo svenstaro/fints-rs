@@ -43,7 +43,7 @@ encoding_rs = "0.8.13"
 # skeptic = "0.13"
 #
 [dev-dependencies]
-pretty_assertions = "0.5"
+pretty_assertions = "0.6"
 # rstest = "0.2"
 # skeptic = "0.13"
 # proptest = "0.8.7"
