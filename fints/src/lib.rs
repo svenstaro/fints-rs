@@ -8,5 +8,5 @@ pub mod utils;
 
 pub use crate::client::PinTanClient;
 pub use crate::dialog::Dialog;
-pub use crate::messages::{DialogInitMessage, DialogSyncMessage};
+pub use crate::messages::{Msg_DialogSync, Msg_DialogInit};
 pub use fints_derive::Message;

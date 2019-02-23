@@ -27,7 +27,7 @@ fn impl_message_macro(ast: &syn::DeriveInput) -> TokenStream {
             /// 7. return
             fn prepare_message_for_sending(&self) -> String {
                 let serialized = to_string(&self).unwrap();
-                dbg!(&serialized);
+                println!("{}", &serialized);
                 base64::encode(&serialized)
             }
         }

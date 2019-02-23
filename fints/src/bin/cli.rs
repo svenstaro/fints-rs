@@ -1,4 +1,3 @@
-use fints::DialogInitMessage;
 use fints::PinTanClient;
 use pretty_env_logger;
 

@@ -12,8 +12,9 @@ pub trait Message {
     fn prepare_message_for_sending(&self) -> String;
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize, Message)]
-pub struct DialogSyncMessage {
+pub struct Msg_DialogSync {
     message_head: Seg_HNHBK_MessageHead,
     signature_head: Seg_HNSHK_SignatureHead,
     identification: Seg_HKIDN_Identification,
@@ -25,14 +26,14 @@ pub struct DialogSyncMessage {
     message_end: Seg_HNHBS_MessageEnd,
 }
 
-impl DialogSyncMessage {
+impl Msg_DialogSync {
     pub fn new(
         bank_code: u32,
         username: &str,
         pin: &str,
         customer_system_id: &str,
         message_no: u16,
-    ) -> DialogSyncMessage {
+    ) -> Msg_DialogSync {
         let security_reference: String = thread_rng().sample_iter(&Alphanumeric).take(14).collect();
         let hnhbk_message_head = Seg_HNHBK_MessageHead {
             segment_head: DEG_SegmentHead {
@@ -163,7 +164,7 @@ impl DialogSyncMessage {
             message_no,
         };
 
-        DialogSyncMessage {
+        Msg_DialogSync {
             message_head: hnhbk_message_head,
             signature_head: hnshk_signature_head,
             identification: hkidn_identification,
@@ -177,8 +178,9 @@ impl DialogSyncMessage {
     }
 }
 
+#[allow(non_camel_case_types)]
 #[derive(Debug, Serialize, Deserialize, Message)]
-pub struct DialogInitMessage {
+pub struct Msg_DialogInit {
     message_head: Seg_HNHBK_MessageHead,
     signature_head: Seg_HNSHK_SignatureHead,
     identification: Seg_HKIDN_Identification,

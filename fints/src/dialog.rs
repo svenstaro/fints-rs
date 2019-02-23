@@ -44,7 +44,7 @@ impl Dialog {
     }
 
     pub fn get_sync_message(&self) -> String {
-        let dialog_sync_message = DialogSyncMessage::new(self.bank_code, &self.username, &self.pin, &self.customer_system_id, self.message_no);
+        let dialog_sync_message = Msg_DialogSync::new(self.bank_code, &self.username, &self.pin, &self.customer_system_id, self.message_no);
         dialog_sync_message.prepare_message_for_sending()
 
         // TODO Send request

@@ -1,9 +1,9 @@
 //! Serialization.
 
+use log::{debug, info, trace};
 use serde::ser::{self, Serialize};
-use std::fmt::{self, Display, Debug};
+use std::fmt::{self, Debug, Display};
 use std::str;
-use log::{info, debug};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Error(String);
@@ -54,12 +54,21 @@ pub struct Serializer {
 
     /// The element position inside the current segment.
     current_segment_index: u32,
+
+    /// For pretty printing the Serialization tree.
+    tree_builder: ptree::TreeBuilder,
 }
 
 pub fn to_string<T>(value: &T) -> Result<String>
 where
     T: Serialize + Debug,
 {
+    // It's not stupid if it works!
+    let debug_struct = format!("{:#?}", value);
+    let struct_name = debug_struct.split_whitespace().next().unwrap_or("Unknown");
+    info!("Serializing: {}", struct_name);
+    trace!("\n{:#?}", value);
+
     let mut serializer = Serializer {
         output: String::new(),
         inside_deg: false,
@@ -68,13 +77,14 @@ where
         struct_stack: vec![],
         current_segment_elements_count: 0,
         current_segment_index: 0,
+        tree_builder: ptree::TreeBuilder::new("\nSerialize".to_string()),
     };
     value.serialize(&mut serializer)?;
 
-    // It's not stupid if it works!
-    let debug = format!("{:#?}", value);
-    info!("Serializing: {}", debug.split_whitespace().next().unwrap_or("Unknown"));
-    debug!("{:#?}", value);
+    let mut tree_buf = Vec::new();
+    ptree::write_tree(&serializer.tree_builder.build(), &mut tree_buf)
+        .expect("Error printing serialization debug tree");
+    trace!("{}", std::str::from_utf8(&tree_buf).unwrap());
 
     Ok(serializer.output)
 }
@@ -241,6 +251,13 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         self.field_index_in_struct = 0;
         self.last_struct_size = len;
         self.struct_stack.push(name.to_string());
+        if name.starts_with("Msg") {
+            self.tree_builder.begin_child(format!("Message {}", name));
+        } else if name.starts_with("Seg") {
+            self.tree_builder.begin_child(format!("Segment {}", name));
+        } else if name.starts_with("DEG") {
+            self.tree_builder.begin_child(format!("DEG {}", name));
+        };
 
         // If this is a new segment, set the length so that we also know when we're finished with
         // this particular segment.
@@ -275,7 +292,7 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_field<T>(&mut self, _key: &'static str, value: &T) -> Result<()>
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
@@ -298,6 +315,7 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
             }
         }
         self.field_index_in_struct += 1;
+        self.tree_builder.add_empty_child(format!("DE {}", key));
         value.serialize(&mut **self)
     }
 
@@ -318,6 +336,7 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
         // This marks the end of a parsed struct so we have to pop it from the stack at the very
         // end.
         self.struct_stack.pop();
+        self.tree_builder.end_child();
 
         Ok(())
     }
