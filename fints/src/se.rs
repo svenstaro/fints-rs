@@ -301,6 +301,12 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
         if let Some(last) = self.struct_stack.last() {
             if last.starts_with("Seg") {
                 self.current_segment_index += 1;
+
+                // If the parent is a Segment, we're not in a DEG.
+                // This will also reset inside_deg when ascending from a DEG.
+                // This will be set to true every time we descend into a struct
+                // whose name starts with DEG (see `serialize_struct`)
+                self.inside_deg = false;
             }
         }
 
@@ -323,14 +329,8 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
         // In case this is a segment, we have to terminate it with `'`.
         if let Some(last) = self.struct_stack.last() {
             if last.starts_with("Seg") && !self.output.is_empty() {
-                self.output += "'";
+                self.output += "'\n";
             }
-        }
-
-        // If we read the last field in this struct, we should reset the data we set for this
-        // struct.
-        if self.field_index_in_struct >= self.last_struct_size as u32 {
-            self.inside_deg = false;
         }
 
         // This marks the end of a parsed struct so we have to pop it from the stack at the very
