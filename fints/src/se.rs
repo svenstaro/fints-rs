@@ -2,6 +2,7 @@
 
 use log::{debug, info, trace};
 use serde::ser::{self, Serialize};
+use serde_type_name::type_name;
 use std::fmt::{self, Debug, Display};
 use std::str;
 
@@ -33,10 +34,6 @@ pub struct Serializer {
     /// The final serialized output string.
     output: String,
 
-    /// Keep track of whether we're currently inside a DEG or not.
-    /// This is necessary because DEGs are delmited differently than DEs.
-    inside_deg: bool,
-
     /// The current field's index in the current struct.
     field_index_in_struct: u32,
 
@@ -67,24 +64,37 @@ where
     let debug_struct = format!("{:#?}", value);
     let struct_name = debug_struct.split_whitespace().next().unwrap_or("Unknown");
     info!("Serializing: {}", struct_name);
-    trace!("\n{:#?}", value);
+    trace!("Struct dump:\n{:#?}", value);
 
     let mut serializer = Serializer {
         output: String::new(),
-        inside_deg: false,
         field_index_in_struct: 0,
         last_struct_size: 0,
         struct_stack: vec![],
         current_segment_elements_count: 0,
         current_segment_index: 0,
-        tree_builder: ptree::TreeBuilder::new("\nSerialize".to_string()),
+        tree_builder: ptree::TreeBuilder::new("Serialize".to_string()),
     };
     value.serialize(&mut serializer)?;
 
     let mut tree_buf = Vec::new();
     ptree::write_tree(&serializer.tree_builder.build(), &mut tree_buf)
         .expect("Error printing serialization debug tree");
-    trace!("{}", std::str::from_utf8(&tree_buf).unwrap());
+    trace!(
+        "Semantic message structure:\n{}",
+        std::str::from_utf8(&tree_buf).unwrap()
+    );
+
+    debug!(
+        "Serialization result of {}:\n{}",
+        struct_name,
+        serializer
+            .output
+            .split("'")
+            .map(|x| format!("{}'", x))
+            .collect::<Vec<String>>()
+            .join("\n")
+    );
 
     Ok(serializer.output)
 }
@@ -266,14 +276,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
             self.current_segment_index = 0;
         }
 
-        // Keep track of when a DEG starts since DEs inside of a DEG are delimited using `:`.
-        // Outside of oa DEG, DEs are delimited using `+`.
-        if name.starts_with("DEG") {
-            self.inside_deg = true;
-        } else {
-            self.inside_deg = false;
-        }
-
         Ok(self)
     }
 
@@ -307,7 +309,9 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
         // Do not separate segments using delimiters.
         if self.struct_stack.iter().any(|x| x.starts_with("Seg")) {
             if self.field_index_in_struct != 0 {
-                if self.inside_deg {
+                // Stuff inside DEGs gets separted by `:` while DEGs are separated from one another
+                // by `+`.
+                if self.struct_stack.iter().any(|x| x.starts_with("DEG")) {
                     self.output += ":";
                 } else {
                     self.output += "+";
@@ -315,7 +319,10 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
             }
         }
         self.field_index_in_struct += 1;
-        self.tree_builder.add_empty_child(format!("DE {}", key));
+        let field_type_name = type_name(&value).unwrap_or_default();
+        if !field_type_name.starts_with("Seg") && !field_type_name.starts_with("DEG") {
+            self.tree_builder.add_empty_child(format!("DE {}", key));
+        }
         value.serialize(&mut **self)
     }
 
@@ -325,12 +332,6 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
             if last.starts_with("Seg") && !self.output.is_empty() {
                 self.output += "'";
             }
-        }
-
-        // If we read the last field in this struct, we should reset the data we set for this
-        // struct.
-        if self.field_index_in_struct >= self.last_struct_size as u32 {
-            self.inside_deg = false;
         }
 
         // This marks the end of a parsed struct so we have to pop it from the stack at the very
