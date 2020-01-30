@@ -28,7 +28,7 @@ chrono = { version = "0.4", features = ["serde"] }
 # rust_decimal = { version = "0.10", features = ["serde"] }
 failure = "0.1"
 log = "0.4"
-pretty_env_logger = "0.3"
+pretty_env_logger = "0.4"
 ptree = "0.2"
 # pest = "2"
 # pest_derive = "2"
